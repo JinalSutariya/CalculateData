@@ -33,7 +33,7 @@ class EditDataVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let selectedItem = selectedItem {
-            // Update UI with selectedItem details (e.g., text fields, labels, etc.)
+            
             titleTxtField.text = selectedItem["itemName"]
             qunTxtField.text = selectedItem["itemQuantity"]
             valueTxtField.text = selectedItem["itemPrice"]
@@ -44,17 +44,27 @@ class EditDataVC: UIViewController {
     
     @IBAction func saveBtn(_ sender: Any) {
         
-        if let itemName = selectedItem?["itemName"] {
-            CoreDataHandler.shared.updateItem(itemName: itemName, newItemName: titleTxtField.text, newItemQun: qunTxtField.text, newItemPrice: valueTxtField.text)
+        // Check if any of the text fields are empty
+        guard let itemName = titleTxtField.text, !itemName.isEmpty,
+              let itemQuantity = qunTxtField.text, !itemQuantity.isEmpty,
+              let itemPrice = valueTxtField.text, !itemPrice.isEmpty else {
+            
+            // Display an alert if any of the fields are empty
+            let alert = UIAlertController(title: "", message: "Please enter values for all fields", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(okAction)
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        if let selectedItemName = selectedItem?["itemName"] {
+            CoreDataHandler.shared.updateItem(itemName: selectedItemName, newItemName: itemName, newItemQun: itemQuantity, newItemPrice: itemPrice)
         } else {
-            // If selectedItem is nil, it's a new item, so save it to Core Data
             saveDataToCoreData()
         }
         
-        // Notify the delegate
         delegate?.didSaveData()
         
-        // Dismiss the view controller
         dismiss(animated: true)
     }
     
@@ -66,10 +76,8 @@ class EditDataVC: UIViewController {
         // Create a new entity
         let newItem = Entity(context: context)
         
-        // Set values from text fields
         newItem.itemName = titleTxtField.text
         
-        // Check if the value starts with "$" and remove it before saving
         if let value = valueTxtField.text, value.hasPrefix("$") {
             newItem.itemPrice = String(value.dropFirst())
         } else {

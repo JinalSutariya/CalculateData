@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, EditDataDelegate {
+class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - OUTLET
     
@@ -49,7 +49,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         checkMark.isHidden = true
         pickerView.delegate = self
         pickerView.dataSource = self
-        
+        pickerView.reloadAllComponents()
+
         pickerView.selectRow(0, inComponent: 0, animated: false)
         updateItemLabel(row: 0)
         
@@ -59,10 +60,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         managerbtn.addTarget(self, action: #selector(managerButtonTapped), for: .touchUpInside)
         
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateTotalPrice()
-    }
+   
     @objc func textFieldDidChange(_ textField: UITextField) {
         updateTotalPrice()
     }
@@ -150,9 +148,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     func updateItemLabel(row: Int) {
         itemName.text = "\(items[row][0])"
     }
-    func didSaveData() {
-        updateTotalPrice()
-    }
+  
     func updateTotalPrice() {
         
         if let quantityText = qunTxtField.text, let quantity = Double(quantityText), quantity > 4 {

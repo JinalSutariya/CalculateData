@@ -73,10 +73,9 @@ class EditPageVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         if let itemPrice = item["itemPrice"], let numericValue = Double(itemPrice),
            let itemQuantity = item["itemQuantity"], let numericQuantity = Double(itemQuantity) {
             
-            // Calculate total value by multiplying quantity and price
-            let totalValue = numericValue * numericQuantity
-            let formattedTotal = String(format: "$ %.2f", totalValue)
-            cell.priceLbl.text = formattedTotal
+            // Display only the price without multiplying by quantity
+            let formattedPrice = String(format: "$ %.2f", numericValue)
+            cell.priceLbl.text = formattedPrice
         } else {
             cell.priceLbl.text = item["itemPrice"]
         }
@@ -87,14 +86,11 @@ class EditPageVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let editDataVC = storyboard.instantiateViewController(withIdentifier: "editData") as! EditDataVC
         
-        // Pass the selected item details to EditDataVC
         editDataVC.selectedItem = itemsArray[indexPath.row]
         
-        // Set EditPageVC as the delegate to receive updates
         editDataVC.delegate = self
         
         editDataVC.modalPresentationStyle = .fullScreen
-        // Present the EditDataVC
         present(editDataVC, animated: true, completion: nil)
         
     }
@@ -103,15 +99,12 @@ class EditPageVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Remove the item from CoreData
             if let itemName = itemsArray[indexPath.row]["itemName"] {
                 CoreDataHandler.shared.deleteItem(itemName: itemName)
             }
             
-            // Remove the item from the data source array
             itemsArray.remove(at: indexPath.row)
             
-            // Update the table view
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
