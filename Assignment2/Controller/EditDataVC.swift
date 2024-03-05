@@ -89,7 +89,7 @@ class EditDataVC: UIViewController {
         // Save the context
         do {
             try context.save()
-            print("Data saved successfully")
+            print("Data save successfully")
         } catch {
             print("Error saving data: \(error)")
         }
